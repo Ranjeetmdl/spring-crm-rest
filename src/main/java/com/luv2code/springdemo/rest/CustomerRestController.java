@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,6 +38,18 @@ public class CustomerRestController {
 			throw new CustomerNotFoundException("Customer Not Found(with id) :"+customerId);
 		}
 		
+		return theCustomer;
+	}
+	
+	//add a mapping for POST /customers
+	@PostMapping("/customers")
+	public Customer addCustomer(@RequestBody Customer theCustomer){
+		//set the customer id explicitly to 0, so to insert a new entry each time
+		//rest client call this API (bec of functionality of dao.saveOrUpdate())
+		
+		theCustomer.setId(0);
+		
+		customerService.saveCustomer(theCustomer);
 		return theCustomer;
 	}
 
