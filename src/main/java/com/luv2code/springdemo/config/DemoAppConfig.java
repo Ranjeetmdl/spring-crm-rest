@@ -16,11 +16,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
@@ -118,6 +115,45 @@ public class DemoAppConfig implements WebMvcConfigurer {
 
 		return txManager;
 	}	
+	//add a security data source
+	@Bean
+	public DataSource mySecurityDataSource(){
+		//create the connection pool
+		ComboPooledDataSource mySecurityDataSource=
+				new ComboPooledDataSource();
+		
+		//set the jdbc driver
+		try {
+			mySecurityDataSource.setDriverClass(env.getProperty("jdbc.driver"));
+					
+		} catch (PropertyVetoException e) {
+			e.printStackTrace();
+		}
+		//log the connection props
+		logger.info(">>===security.jdbc.url :"+env.getProperty("security.jdbc.url"));
+		logger.info(">>jdbc.user(Security) :"+env.getProperty("jdbc.user"));
+		
+		//set database connection props
+		mySecurityDataSource.setJdbcUrl(env.getProperty("security.jdbc.url"));
+		mySecurityDataSource.setUser(env.getProperty("jdbc.user"));
+		mySecurityDataSource.setPassword(env.getProperty("jdbc.password"));
+		
+		//set connection pool props
+		//set connection pool props
+		mySecurityDataSource.setInitialPoolSize(
+						   getIntProperty("connection.pool.initialPoolSize"));
+				
+		mySecurityDataSource.setMinPoolSize(
+						getIntProperty("connection.pool.minPoolSize"));
+				
+		mySecurityDataSource.setMaxPoolSize(
+						    getIntProperty("connection.pool.maxPoolSize"));
+				
+		mySecurityDataSource.setMaxIdleTime(
+						   getIntProperty("connection.pool.maxIdleTime"));
+				
+		return mySecurityDataSource;
+	}
 	
 }
 
